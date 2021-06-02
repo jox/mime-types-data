@@ -26,7 +26,8 @@ Hoe.spec 'mime-types-data' do
   extra_dev_deps << [ 'hoe-git', '~> 1.6' ]
   extra_dev_deps << [ 'hoe-rubygems', '~> 1.0' ]
   extra_dev_deps << [ 'rake', '>= 10.0', '< 14' ]
-  extra_dev_deps << [ 'mime-types', '>= 3.2.1', '< 4' ]
+  extra_dev_deps << [ 'mime-types', '>= 3.4.0', '< 4' ]
+  extra_dev_deps << [ 'psych', '~> 3.0' ]
 end
 
 $LOAD_PATH.unshift 'lib'
@@ -80,19 +81,6 @@ namespace :release do
     else
       warn 'No changes detected.'
     end
-
-#     file = IO.read('History.md')
-#     note = <<-NOTE
-# <!-- automatic-release -->
-
-# ## #{new_version} / #{Date.today.strftime('%Y-%m-%d')}
-
-# - Updated the IANA media registry entries as of release date.
-#     NOTE
-
-#     updated = file.sub(/<!-- automatic-release -->\n/, note)
-
-#     IO.write('History.md', updated)
   end
 end
 
