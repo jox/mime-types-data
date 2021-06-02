@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
+$LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
 
-require 'open-uri'
-require 'nokogiri'
-require 'cgi'
-require 'pathname'
-require 'yaml'
+require "open-uri"
+require "nokogiri"
+require "cgi"
+require "pathname"
+require "yaml"
 
-ENV['RUBY_MIME_TYPES_LAZY_LOAD'] = 'yes'
-require 'mime/types/support'
+ENV["RUBY_MIME_TYPES_LAZY_LOAD"] = "yes"
+require "mime/types/support"
 
 # IANA Registry importing
 class IANARegistry
@@ -58,13 +58,13 @@ class IANARegistry
     yield self if block_given?
   end
 
-  ASSIGNMENT_FILE_REF = '{%s=http://www.iana.org/assignments/media-types/%s}'
+  ASSIGNMENT_FILE_REF = "{%s=http://www.iana.org/assignments/media-types/%s}"
 
   def parse
-    @registry.css('record').each do |record|
-      subtype = record.at_css('name').text
-      obsolete = record.at_css('obsolete')&.text
-      use_instead = record.at_css('deprecated')&.text
+    @registry.css("record").each do |record|
+      subtype = record.at_css("name").text
+      obsolete = record.at_css("obsolete")&.text
+      use_instead = record.at_css("deprecated")&.text
 
       if subtype =~ /OBSOLETE|DEPRECATE/i
         obsolete = true
@@ -74,14 +74,14 @@ class IANARegistry
       subtype, notes = subtype.split(/ /, 2)
 
       xrefs = parse_refs_and_files(
-        record.css('xref'),
-        record.css('file'),
+        record.css("xref"),
+        record.css("file"),
         subtype
       )
 
-      xrefs.add('notes', notes) if notes
+      xrefs.add("notes", notes) if notes
 
-      content_type = @provisional ? subtype : [ @type, subtype ].join('/')
+      content_type = @provisional ? subtype : [@type, subtype].join("/")
       types = @types.select { |t| t.content_type.casecmp(content_type).zero? }
 
       if types.empty?
@@ -106,7 +106,7 @@ class IANARegistry
 
   def save
     @to.mkpath
-    File.open(@file, 'wb') { |f| f.puts @types.map.to_a.sort.uniq.to_yaml }
+    File.open(@file, "wb") { |f| f.puts @types.map.to_a.sort.uniq.to_yaml }
   end
 
   private
@@ -123,8 +123,8 @@ class IANARegistry
     xr = MIME::Types::Container.new
 
     refs.each do |xref|
-      type = xref['type']
-      data = xref['data']
+      type = xref["type"]
+      data = xref["data"]
 
       next if data.nil? || data.empty?
 
@@ -133,12 +133,12 @@ class IANARegistry
 
     files.each do |file|
       file_name = if file.text == subtype
-                    [ @type, subtype ].join('/')
-                  else
-                    file.text
-                  end
+        [@type, subtype].join("/")
+      else
+        file.text
+      end
 
-      xr.add(file['type'], file_name)
+      xr.add(file["type"], file_name)
     end
 
     xr
